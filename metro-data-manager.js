@@ -54,6 +54,32 @@ class MetroDataManager {
         if (!metroData) return [];
         return metroData.getPath ? metroData.getPath(startStation, endStation) : [];
     }
+    
+    // 获取站点信息
+    getStationInfo(cityName, stationName) {
+        const metroData = this.getMetroData(cityName);
+        if (!metroData) return null;
+        
+        // 获取站点所属的所有线路
+        const lines = [];
+        if (metroData.lines) {
+            Object.keys(metroData.lines).forEach(lineId => {
+                const line = metroData.lines[lineId];
+                if (line.stations && line.stations.includes(stationName)) {
+                    lines.push({
+                        id: lineId,
+                        name: line.name,
+                        color: line.color
+                    });
+                }
+            });
+        }
+        
+        return {
+            name: stationName,
+            lines: lines
+        };
+    }
 }
 
 // 创建全局实例

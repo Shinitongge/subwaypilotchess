@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>城市地铁飞行棋 - 在线版</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 在线游戏特有样式 */
+        .page {
+            display: none;
+            height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .active {
+            display: block;
+        }
+        
+        .menu-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .menu-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #fff;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #2ecc71;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .connection-status {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            z-index: 1000;
+        }
+        
+        .status-connected {
+            background: #2ecc71;
+            color: white;
+        }
+        
+        .status-disconnected {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .room-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .room-info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: white;
+        }
+        
+        .player-list {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .player-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .player-piece {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .player-status {
+            margin-left: auto;
+            font-size: 12px;
+            color: #2ecc71;
+        }
+        
+        .chat-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+        }
+        
+        .chat-message {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .chat-player {
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .chat-time {
+            font-size: 10px;
+            color: #95a5a6;
+            margin-left: 5px;
+        }
+        
+        .chat-input-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 8px;
+            border-radius: 5px;
+            border: none;
+        }
+        
+        .dice-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .dice {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- 连接状态显示 -->
+    <div id="connectionStatus" class="connection-status status-disconnected">未连接</div>
+    
+    <!-- 菜单页面 -->
+    <div id="menuPage" class="page active">
+        <div class="menu-container">
+            <h1 class="menu-title">🚇 城市地铁飞行棋 - 在线版</h1>
+            
+            <div class="form-group">
+                <label for="playerNameInput">玩家昵称</label>
+                <input type="text" id="playerNameInput" placeholder="请输入您的昵称" value="玩家1">
+            </div>
+            
+            <div class="form-group">
+                <label for="citySelect">选择城市</label>
+                <select id="citySelect">
+                    <option value="广州">广州</option>
+                    <option value="深圳">深圳</option>
+                    <option value="上海">上海</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="playerCountSelect">玩家数量</label>
+                <select id="playerCountSelect">
+                    <option value="2">2人</option>
+                    <option value="3">3人</option>
+                    <option value="4">4人</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="diceCountSelect">骰子数量</label>
+                <select id="diceCountSelect">
+                    <option value="1">1颗</option>
+                    <option value="2" selected>2颗</option>
+                    <option value="3">3颗</option>
+                </select>
+            </div>
+            
+            <button id="createRoomBtn" class="btn btn-success">创建房间</button>
+            
+            <div style="margin: 20px 0; text-align: center; color: #fff;">或</div>
+            
+            <div class="form-group">
+                <label for="roomIdInput">房间号</label>
+                <input type="text" id="roomIdInput" placeholder="请输入房间号">
+            </div>
+            
+            <div class="form-group">
+                <label for="joinPlayerNameInput">玩家昵称</label>
+                <input type="text" id="joinPlayerNameInput" placeholder="请输入您的昵称" value="玩家2">
+            </div>
+            
+            <button id="joinRoomBtn" class="btn btn-primary">加入房间</button>
+        </div>
+    </div>
+    
+    <!-- 房间大厅页面 -->
+    <div id="lobbyPage" class="page">
+        <div class="menu-container">
+            <h1 class="menu-title">🚇 房间大厅</h1>
+            
+            <div class="room-info">
+                <div class="room-info-item">
+                    <span>房间号:</span>
+                    <span id="roomIdDisplay">-</span>
+                </div>
+                <div class="room-info-item">
+                    <span>城市:</span>
+                    <span id="roomCityDisplay">-</span>
+                </div>
+                <div class="room-info-item">
+                    <span>玩家数量:</span>
+                    <span id="roomPlayerCountDisplay">-</span>
+                </div>
+                <div class="room-info-item">
+                    <span>骰子数量:</span>
+                    <span id="roomDiceCountDisplay">-</span>
+                </div>
+            </div>
+            
+            <h3 style="color: white; margin: 20px 0 10px;">玩家列表</h3>
+            <div id="playerList" class="player-list">
+                <!-- 玩家列表将通过JavaScript动态生成 -->
+            </div>
+            
+            <div class="btn-group">
+                <button id="readyBtn" class="btn btn-primary">准备</button>
+                <button id="startGameBtn" class="btn btn-success">开始游戏</button>
+                <button id="leaveRoomBtn" class="btn btn-warning">离开房间</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 游戏页面 -->
+    <div id="gamePage" class="page">
+        <div class="game-container">
+            <header class="game-header">
+                <h1>🚇 城市地铁飞行棋 - 在线版</h1>
+                <div class="game-info">
+                    <div class="current-player">
+                        当前玩家: <span id="currentPlayerName">玩家1</span>
+                    </div>
+                    <div class="dice-controls">
+                        <label>骰子数量:</label>
+                        <span id="gameDiceCount">2</span>
+                        <button id="rollDice" class="roll-btn">🎲 摇骰子</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="game-content">
+                <div class="left-panel">
+                    <div class="player-list">
+                        <h3>玩家列表</h3>
+                        <div id="gamePlayerList"></div>
+                    </div>
+                    
+                    <div class="ranking">
+                        <h3>🏆 实时排名</h3>
+                        <div id="rankingList"></div>
+                    </div>
+
+                    <div class="chat-container">
+                        <h3>💬 聊天</h3>
+                        <div id="chatMessages" class="chat-messages">
+                            <!-- 聊天消息将通过JavaScript动态生成 -->
+                        </div>
+                        <div class="chat-input-group">
+                            <input type="text" id="chatInput" class="chat-input" placeholder="输入消息...">
+                            <button id="sendChatBtn" class="btn btn-primary">发送</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-board-container">
+                    <div class="dice-container" id="diceContainer">
+                        <!-- 骰子将通过JavaScript动态生成 -->
+                    </div>
+                    <div class="game-board" id="gameBoard"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="guangzhou-metro-new.js"></script>
+    <script src="shenzhen-metro.js"></script>
+    <script src="shanghai-metro.js"></script>
+    <script src="metro-data-manager.js"></script>
+    <script src="online-game.js"></script>
+</body>
+</html>

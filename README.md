@@ -170,30 +170,46 @@ An innovative board game based on real metro/subway lines! Players can travel fr
 - 🛤️ Real-time highlighting of current player's path
 - 📊 Metro line legend for easy reference
 
-## 🚀 How to Play
+## ▶️ Quick Start
 
-1. **Player Setup**
-   - Choose number of players (2-4)
-   - **Set individual start and end stations for each player**
-   - Select number of dice (1-3)
+### Online Play
+Visit the [GitHub Pages deployment](https://shinitongge.github.io/subwaypilotchess/) to play the game directly in your browser.
 
-2. **Start Game**
-   - Click the "Start Game" button
-   - System automatically calculates shortest path for each player
-   - Take turns clicking the "Roll Dice" button
-   - Watch your pieces move along the metro lines
+### Local Development
 
-3. **Winning Condition**
-   - First player to reach their destination station wins
-   - Full ranking displayed at game end
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Shinitongge/subwaypilotchess.git
+   ```
 
-## 🛠 Technical Implementation
+2. Navigate to the project directory:
+   ```bash
+   cd subwaypilotchess
+   ```
 
-- **Frontend**: HTML5 + CSS3 + JavaScript ES6
-- **Algorithm**: BFS shortest path algorithm
-- **Responsive Design**: Support for desktop and mobile
-- **Animations**: CSS3 animations + JavaScript control
-- **Data**: Real metro line data
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+4. Start the local development server:
+   ```bash
+   npm start
+   # or
+   node server.js
+   ```
+
+5. Open your browser and visit `http://localhost:3000` to play the game.
+
+### Online Multiplayer Game
+
+To play the online multiplayer version:
+
+1. Start the server as described above
+2. Open your browser and visit `http://localhost:3000/online.html`
+3. Create a room or join an existing room with a room code
+4. Wait for other players to join
+5. Start the game when all players are ready
 
 ## 🌍 Supported Cities
 
@@ -211,6 +227,15 @@ An innovative board game based on real metro/subway lines! Players can travel fr
 - **Line 8** (25 stations) - Jiaoxin ↔ Wanshengwei
 - And more...
 
+## 🛠 Technical Implementation
+
+- **Frontend**: HTML5 + CSS3 + JavaScript ES6
+- **Backend**: Node.js with WebSocket for real-time communication
+- **Algorithm**: BFS shortest path algorithm
+- **Responsive Design**: Support for desktop and mobile
+- **Animations**: CSS3 animations + JavaScript control
+- **Data**: Real metro line data
+
 ## 🎯 Game Rules
 
 1. **Personalized Routes**: Each player can set different start and end stations
@@ -225,12 +250,17 @@ An innovative board game based on real metro/subway lines! Players can travel fr
 - **Path Highlighting**: Current player's path highlighted in their color
 - **Transfer Station Identification**: Transfer stations specially marked with golden highlight
 
-## ▶️ Quick Start
+## 🌐 Deployment
 
-1. Clone or download this repository
-2. Open `index.html` in your web browser
-3. Select number of players, city, and set start/end stations for each player
-4. Click "Start Game" and enjoy!
+To make the game available to people worldwide, see our detailed [Deployment Guide](DEPLOYMENT.md) which covers:
+
+- GitHub Pages (simplest option)
+- Vercel (recommended)
+- Heroku
+- Docker
+- Traditional server deployment
+
+Each deployment method has its own advantages and limitations. For full online multiplayer functionality, platforms with WebSocket support like Vercel or Heroku are recommended.
 
 ## 🧪 Validation
 
@@ -245,8 +275,11 @@ node validate-stations.js
 
 ```
 subwaypilotchess/
-├── index.html          # Main HTML file
-├── game.js             # Main game logic
+├── index.html          # Main HTML file (single player)
+├── online.html         # Online multiplayer HTML file
+├── game.js             # Main game logic (single player)
+├── online-game.js      # Online game client logic
+├── server.js           # WebSocket server for online play
 ├── style.css           # Styling
 ├── start.js            # Local development server
 ├── package.json        # Project configuration
@@ -258,9 +291,14 @@ subwaypilotchess/
 ├── shanghai-metro.js       # Shanghai metro data
 ├── metro-data-manager.js   # Metro data management
 ├── validate-stations.js    # Station data validation script
+├── DEPLOYMENT.md           # Deployment guide
+├── Dockerfile              # Docker configuration
+├── Procfile                # Heroku configuration
+├── vercel.json             # Vercel configuration
 └── .github/
     └── workflows/
-        └── validate.yml    # GitHub Actions workflow
+        ├── validate.yml    # GitHub Actions workflow for validation
+        └── deploy.yml      # GitHub Actions workflow for deployment
 ```
 
 ## 🤝 Contributing

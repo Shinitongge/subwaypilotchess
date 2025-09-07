@@ -297,7 +297,10 @@ class SubwayPilotChess {
         
         // 计算水平/垂直路径
         let pathData;
-        const cornerRadius = 15; // 圆角半径
+        
+        // 对于4号线和8号线，优先使用直线连接，减少圆角
+        const useStraightLines = ['4', '8'].includes(lineId);
+        const cornerRadius = useStraightLines ? 5 : 15; // 减少圆角半径
         
         if (Math.abs(start.x - end.x) > Math.abs(start.y - end.y)) {
             // 主要是水平移动
@@ -306,15 +309,20 @@ class SubwayPilotChess {
                 pathData = `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
             } else {
                 // 水平+垂直，带圆角
-                const midX = start.x + (end.x - start.x) * 0.7;
-                const direction = end.y > start.y ? 1 : -1;
-                
-                pathData = `M ${start.x} ${start.y} 
-                           L ${midX - cornerRadius} ${start.y} 
-                           Q ${midX} ${start.y} ${midX} ${start.y + cornerRadius * direction}
-                           L ${midX} ${end.y - cornerRadius * direction}
-                           Q ${midX} ${end.y} ${midX + cornerRadius} ${end.y}
-                           L ${end.x} ${end.y}`;
+                if (useStraightLines) {
+                    // 对4号线和8号线使用更直接的连接方式
+                    pathData = `M ${start.x} ${start.y} L ${end.x} ${start.y} L ${end.x} ${end.y}`;
+                } else {
+                    const midX = start.x + (end.x - start.x) * 0.7;
+                    const direction = end.y > start.y ? 1 : -1;
+                    
+                    pathData = `M ${start.x} ${start.y} 
+                               L ${midX - cornerRadius} ${start.y} 
+                               Q ${midX} ${start.y} ${midX} ${start.y + cornerRadius * direction}
+                               L ${midX} ${end.y - cornerRadius * direction}
+                               Q ${midX} ${end.y} ${midX + cornerRadius} ${end.y}
+                               L ${end.x} ${end.y}`;
+                }
             }
         } else {
             // 主要是垂直移动
@@ -323,15 +331,20 @@ class SubwayPilotChess {
                 pathData = `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
             } else {
                 // 垂直+水平，带圆角
-                const midY = start.y + (end.y - start.y) * 0.7;
-                const direction = end.x > start.x ? 1 : -1;
-                
-                pathData = `M ${start.x} ${start.y} 
-                           L ${start.x} ${midY - cornerRadius} 
-                           Q ${start.x} ${midY} ${start.x + cornerRadius * direction} ${midY}
-                           L ${end.x - cornerRadius * direction} ${midY}
-                           Q ${end.x} ${midY} ${end.x} ${midY + cornerRadius}
-                           L ${end.x} ${end.y}`;
+                if (useStraightLines) {
+                    // 对4号线和8号线使用更直接的连接方式
+                    pathData = `M ${start.x} ${start.y} L ${start.x} ${end.y} L ${end.x} ${end.y}`;
+                } else {
+                    const midY = start.y + (end.y - start.y) * 0.7;
+                    const direction = end.x > start.x ? 1 : -1;
+                    
+                    pathData = `M ${start.x} ${start.y} 
+                               L ${start.x} ${midY - cornerRadius} 
+                               Q ${start.x} ${midY} ${start.x + cornerRadius * direction} ${midY}
+                               L ${end.x - cornerRadius * direction} ${midY}
+                               Q ${end.x} ${midY} ${end.x} ${midY + cornerRadius}
+                               L ${end.x} ${end.y}`;
+                }
             }
         }
         
@@ -443,19 +456,32 @@ class SubwayPilotChess {
                     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
                 `;
                 
+                // 获取站点所属的地铁线路信息
+                const stationInfo = METRO_DATA_MANAGER.getStationInfo(this.selectedCity, stationName);
+                let lineInfo = '';
+                if (stationInfo && stationInfo.lines) {
+                    lineInfo = stationInfo.lines.map(line => 
+                        `<div style="display: flex; align-items: center; margin-top: 2px;">
+                            <div style="width: 10px; height: 10px; background: ${line.color}; border-radius: 2px; margin-right: 5px;"></div>
+                            <span>${line.name}</span>
+                        </div>`
+                    ).join('');
+                }
+                
                 tooltip.innerHTML = `
                     <div style="font-weight: bold; margin-bottom: 4px;">${stationName}</div>
                     ${isTransfer ? '<div style="color: #ff0;">换乘站</div>' : ''}
+                    ${lineInfo ? `<div style="margin-top: 4px;">${lineInfo}</div>` : ''}
                 `;
                 
                 stationElement.appendChild(tooltip);
                 
-                // 3秒后自动移除tooltip
+                // 1秒后自动移除tooltip
                 setTimeout(() => {
                     if (tooltip.parentNode) {
                         tooltip.parentNode.removeChild(tooltip);
                     }
-                }, 3000);
+                }, 1000);
             });
             
             stationElement.addEventListener('mouseleave', () => {

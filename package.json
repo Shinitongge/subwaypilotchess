@@ -2,12 +2,12 @@
   "name": "subway-pilot-chess",
   "version": "1.0.0",
   "description": "An innovative board game based on real metro/subway lines",
-  "main": "game.js",
+  "main": "server.js",
   "scripts": {
     "test": "node validate-stations.js",
-    "start": "node start.js",
-    "validate": "node validate-stations.js",
-    "dev": "node start.js"
+    "start": "node server.js",
+    "dev": "node server.js",
+    "validate": "node validate-stations.js"
   },
   "repository": {
     "type": "git",
@@ -25,5 +25,11 @@
   "bugs": {
     "url": "https://github.com/Shinitongge/subwaypilotchess/issues"
   },
-  "homepage": "https://github.com/Shinitongge/subwaypilotchess#readme"
+  "homepage": "https://github.com/Shinitongge/subwaypilotchess#readme",
+  "dependencies": {
+    "ws": "^8.0.0"
+  },
+  "engines": {
+    "node": "14.x"
+  }
 }
