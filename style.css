@@ -29,7 +29,7 @@ body {
 
 .game-header h1 {
     text-align: center;
-    color: #2c3e50;
+    color: #333;
     margin-bottom: 15px;
     font-size: 2.5em;
 }
@@ -39,12 +39,13 @@ body {
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 15px;
 }
 
 .current-player {
-    font-size: 1.2em;
     font-weight: bold;
+    color: #3498db;
+    font-size: 1.2em;
 }
 
 .dice-controls {
@@ -53,34 +54,40 @@ body {
     gap: 10px;
 }
 
-.roll-btn, .start-btn, .reset-btn {
-    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 1em;
+.dice-controls label {
     font-weight: bold;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(238, 90, 36, 0.3);
 }
 
-.roll-btn:hover, .start-btn:hover, .reset-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(238, 90, 36, 0.4);
+.dice-controls select {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.roll-btn {
+    padding: 8px 15px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s;
+}
+
+.roll-btn:hover {
+    background: #2980b9;
 }
 
 .roll-btn:disabled {
-    background: #ccc;
+    background: #bdc3c7;
     cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
 }
 
 .game-content {
     display: flex;
     gap: 20px;
+    height: calc(100vh - 200px);
 }
 
 .left-panel {
@@ -101,26 +108,61 @@ body {
 
 .player-list h3, .ranking h3, .game-settings h3 {
     margin-bottom: 15px;
-    color: #2c3e50;
+    color: #333;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 5px;
 }
 
 .player-item {
     display: flex;
     align-items: center;
-    gap: 10px;
     padding: 10px;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
+    background: #f8f9fa;
     border-radius: 8px;
-    background: rgba(52, 152, 219, 0.1);
-    border-left: 4px solid;
+    border-left: 4px solid #3498db;
 }
 
 .player-piece {
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    border: 2px solid #fff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    margin-right: 10px;
+}
+
+.player-info {
+    flex: 1;
+}
+
+.player-name {
+    font-weight: bold;
+}
+
+.player-status {
+    font-size: 0.9em;
+    color: #27ae60;
+}
+
+.ranking-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    margin-bottom: 5px;
+    background: #f8f9fa;
+    border-radius: 5px;
+}
+
+.ranking-item:nth-child(1) {
+    background: #fff9c4;
+    font-weight: bold;
+}
+
+.ranking-item:nth-child(2) {
+    background: #e3f2fd;
+}
+
+.ranking-item:nth-child(3) {
+    background: #ffe0b2;
 }
 
 .setting-group {
@@ -136,117 +178,186 @@ body {
 .setting-group select {
     width: 100%;
     padding: 8px;
-    border: 1px solid #ddd;
     border-radius: 5px;
-    font-size: 14px;
+    border: 1px solid #ddd;
+}
+
+.start-btn, .reset-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+.start-btn {
+    background: #27ae60;
+    color: white;
+}
+
+.start-btn:hover {
+    background: #219653;
+}
+
+.reset-btn {
+    background: #e74c3c;
+    color: white;
+}
+
+.reset-btn:hover {
+    background: #c0392b;
+}
+
+/* 在线游戏按钮 */
+.online-btn {
+    width: 100%;
+    padding: 12px;
+    background: #9b59b6;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+.online-btn:hover {
+    background: #8e44ad;
 }
 
 .game-board-container {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-}
-
-.dice-display {
     background: rgba(255, 255, 255, 0.95);
-    padding: 20px;
     border-radius: 15px;
+    padding: 20px;
     box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
     backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.18);
+    overflow: auto;
+    position: relative;
+}
+
+.dice-display {
     display: flex;
-    gap: 10px;
     justify-content: center;
-    align-items: center;
-    min-height: 80px;
+    gap: 20px;
+    margin-bottom: 20px;
 }
 
 .dice {
     width: 60px;
     height: 60px;
-    background: #fff;
-    border: 2px solid #333;
-    border-radius: 8px;
+    background: white;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 28px;
     font-weight: bold;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transition: transform 0.1s ease;
-}
-
-.dice.rolling {
-    animation: diceRoll 0.5s ease-in-out;
-}
-
-@keyframes diceRoll {
-    0%, 100% { transform: rotate(0deg); }
-    25% { transform: rotate(90deg); }
-    50% { transform: rotate(180deg); }
-    75% { transform: rotate(270deg); }
-}
-
-.game-board {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    max-width: 1800px;
-    width: 100%;
-    max-height: 1000px;
-    overflow: auto;
-    position: relative;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
 
 .metro-map-container {
-    position: relative;
-    width: 1800px;
-    height: 1400px;
-    margin: 0 auto;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    border-radius: 10px;
-    overflow: visible;
-    transform-origin: top left;
-}
-
-.stations-container {
-    position: relative;
     width: 100%;
     height: 100%;
+    min-height: 600px;
+    position: relative;
+    overflow: auto;
 }
 
 .metro-station {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid #333;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
     transition: all 0.3s ease;
-    user-select: none;
+    z-index: 10;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
 }
 
 .metro-station:hover {
-    transform: scale(1.2) !important;
-    z-index: 20 !important;
+    transform: scale(1.2);
+    z-index: 20;
 }
 
-.station-tooltip {
-    animation: fadeIn 0.2s ease-in-out;
+.metro-line {
+    position: absolute;
+    height: 4px;
+    transform-origin: 0 0;
+    z-index: 1;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
-    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+.piece {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    z-index: 15;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
-/* 棋子容器样式 */
-.pieces-container {
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 500px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.metro-legend {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    z-index: 100;
+}
+
+.legend-item {
     display: flex;
-    gap: 2px;
-    justify-content: center;
     align-items: center;
-    flex-wrap: wrap;
-    max-width: 40px;
+    margin-bottom: 8px;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: 10px;
+    border: 1px solid #333;
+}
+
+.legend-name {
+    font-size: 14px;
 }
 
 /* 路径高亮样式 */
@@ -299,177 +410,6 @@ body {
     font-size: 11px;
     text-align: center;
     padding: 5px;
-}
-
-.station:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(52, 73, 94, 0.3);
-}
-
-.station.start {
-    background: linear-gradient(135deg, #2ecc71, #27ae60);
-    color: white;
-    border-color: #27ae60;
-}
-
-.station.end {
-    background: linear-gradient(135deg, #e74c3c, #c0392b);
-    color: white;
-    border-color: #c0392b;
-}
-
-.station.current {
-    background: linear-gradient(135deg, #f39c12, #e67e22);
-    color: white;
-    border-color: #e67e22;
-    animation: pulse 1s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
-.pieces-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 2px;
-    pointer-events: none;
-}
-
-.piece {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    border: 2px solid #fff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-    transition: all 0.1s ease;
-    position: relative;
-    z-index: 10;
-}
-
-.piece.moving {
-    animation: pieceMove 0.1s ease-in-out, glow 0.1s ease-in-out;
-    transform: scale(1.2);
-}
-
-@keyframes glow {
-    0%, 100% { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4); }
-    50% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.8); }
-}
-
-@keyframes pieceMove {
-    0%, 100% { transform: scale(1.2); }
-    50% { transform: scale(1.4); }
-}
-
-.line-indicator {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    font-size: 8px;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: 15% auto;
-    padding: 20px;
-    border: none;
-    border-radius: 15px;
-    width: 80%;
-    max-width: 500px;
-    text-align: center;
-    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-}
-
-.modal-content h2 {
-    color: #2c3e50;
-    margin-bottom: 20px;
-}
-
-.modal-content button {
-    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 1em;
-    font-weight: bold;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(238, 90, 36, 0.3);
-}
-
-.modal-content button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(238, 90, 36, 0.4);
-}
-
-.ranking-item {
-    padding: 10px;
-    margin-bottom: 8px;
-    border-radius: 8px;
-    background: rgba(52, 152, 219, 0.1);
-    border-left: 4px solid;
-}
-
-.metro-legend {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    max-width: 200px;
-    z-index: 100;
-    font-size: 12px;
-}
-
-/* 在线游戏按钮 */
-.online-btn {
-    width: 100%;
-    padding: 12px;
-    background: #9b59b6;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: background-color 0.3s;
-}
-
-.online-btn:hover {
-    background: #8e44ad;
 }
 
 /* 响应式调整 */

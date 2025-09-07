@@ -42,6 +42,21 @@ class PollingSubwayPilotChess {
     init() {
         this.setupEventListeners();
         this.showMenu();
+        this.updateConnectionStatus('connected'); // 基于HTTP轮询，始终显示已连接
+    }
+
+    // 更新连接状态显示
+    updateConnectionStatus(status) {
+        const statusElement = document.getElementById('connectionStatus');
+        if (statusElement) {
+            if (status === 'connected') {
+                statusElement.textContent = '已连接';
+                statusElement.className = 'connection-status status-connected';
+            } else {
+                statusElement.textContent = '未连接';
+                statusElement.className = 'connection-status status-disconnected';
+            }
+        }
     }
     
     setupEventListeners() {
@@ -228,30 +243,21 @@ class PollingSubwayPilotChess {
         if (!this.roomId || !this.playerId) return;
         
         try {
-            const response = await this.apiRequest('/toggleReady', {
+            const result = await this.apiRequest('/toggleReady', {
                 roomId: this.roomId,
                 playerId: this.playerId
             });
             
-            // 使用更语义化的类名和按钮文本
             const readyBtn = document.getElementById('readyBtn');
-            if (response.ready) {
+            if (result.ready) {
                 readyBtn.textContent = '取消准备';
-                readyBtn.classList.remove('btn-primary');
-                readyBtn.classList.add('btn-secondary');
+                readyBtn.className = 'btn btn-secondary';
             } else {
                 readyBtn.textContent = '准备';
-                readyBtn.classList.remove('btn-secondary');
-                readyBtn.classList.add('btn-primary');
+                readyBtn.className = 'btn btn-primary';
             }
-            
-            // 添加准备状态切换成功的提示信息
-            this.showNotification(response.message || '准备状态已更新');
-            
-            return response;
         } catch (error) {
             this.showError('切换准备状态失败: ' + error.message);
-            throw error;
         }
     }
     

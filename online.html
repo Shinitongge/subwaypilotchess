@@ -7,9 +7,17 @@
     <link rel="stylesheet" href="style.css">
     <style>
         /* 在线游戏特有样式 */
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+        }
+        
         .page {
             display: none;
-            height: 100vh;
+            min-height: 100vh;
             padding: 20px;
             box-sizing: border-box;
         }
@@ -374,6 +382,15 @@
     <script src="shenzhen-metro.js"></script>
     <script src="shanghai-metro.js"></script>
     <script src="metro-data-manager.js"></script>
-    <script src="online-game.js"></script>
+    <script src="polling-game.js"></script>
+    <script>
+        // 页面加载完成后初始化在线游戏
+        document.addEventListener('DOMContentLoaded', () => {
+            // 只在有在线游戏元素时初始化
+            if (document.getElementById('menuPage')) {
+                window.pollingGame = new PollingSubwayPilotChess();
+            }
+        });
+    </script>
 </body>
 </html>
