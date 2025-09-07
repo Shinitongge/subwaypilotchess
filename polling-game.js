@@ -93,17 +93,21 @@ class PollingSubwayPilotChess {
         }
         
         try {
+            console.log('Sending request to:', url, 'with data:', data);
             const response = await fetch(url, options);
+            console.log('Response status:', response.status);
+            
             const result = await response.json();
+            console.log('Response data:', result);
             
             if (!response.ok) {
-                throw new Error(result.error || 'API request failed');
+                throw new Error(result.error || 'API request failed with status ' + response.status);
             }
             
             return result;
         } catch (error) {
             console.error('API request failed:', error);
-            this.showError(error.message);
+            this.showError('网络错误: ' + error.message);
             throw error;
         }
     }
@@ -125,16 +129,32 @@ class PollingSubwayPilotChess {
         const playerCount = Math.max(1, Math.min(4, parseInt(document.getElementById('playerCountSelect').value) || 2)); // 限制在1-4之间
         const diceCount = parseInt(document.getElementById('diceCountSelect').value) || 2;
         
+        // 验证输入
+        if (!playerName.trim()) {
+            this.showError('请输入玩家昵称');
+            return;
+        }
+        
+        const requestData = {
+            playerName: playerName.trim(),
+            city: city,
+            playerCount: playerCount,
+            diceCount: diceCount
+        };
+        
+        console.log('Creating room with data:', requestData);
+        
         try {
-            const result = await this.apiRequest('/createRoom', {
-                playerName: playerName,
-                city: city,
-                playerCount: playerCount,
-                diceCount: diceCount
-            });
+            const result = await this.apiRequest('/createRoom', requestData);
+            
+            if (!result.success) {
+                throw new Error(result.error || '创建房间失败');
+            }
             
             this.roomId = result.roomId;
             this.playerId = result.playerId;
+            
+            console.log('Room created successfully:', this.roomId, this.playerId);
             
             // 显示房间页面
             this.showLobby({
@@ -147,6 +167,7 @@ class PollingSubwayPilotChess {
                 }]
             });
         } catch (error) {
+            console.error('Failed to create room:', error);
             this.showError('创建房间失败: ' + error.message);
         }
     }

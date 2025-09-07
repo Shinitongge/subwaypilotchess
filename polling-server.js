@@ -111,7 +111,7 @@ function handleApiRequest(req, res, pathname, query) {
         processApiRequest(req, res, pathname, query, data);
       } catch (error) {
         res.writeHead(400);
-        res.end(JSON.stringify({ error: 'Invalid JSON' }));
+        res.end(JSON.stringify({ error: 'Invalid JSON: ' + error.message }));
       }
     });
   } else {
@@ -163,45 +163,64 @@ function processApiRequest(req, res, pathname, query, data) {
 
 // 创建房间
 function createRoom(req, res, data) {
-  const roomId = generateRoomId();
-  const playerId = generatePlayerId();
+  console.log('Creating room with data:', data);
   
-  // 确保玩家数量在1-4之间
-  const playerCount = Math.max(1, Math.min(4, data.playerCount || 2));
-  
-  const room = {
-    id: roomId,
-    hostId: playerId,
-    players: [{
-      id: playerId,
-      name: data.playerName || 'Player 1',
-      color: '#e74c3c',
-      ready: false,
-      position: 0,
-      finished: false,
-      rank: null
-    }],
-    gameState: 'waiting', // waiting, playing, finished
-    settings: {
-      city: data.city || '广州',
-      playerCount: playerCount,
-      diceCount: data.diceCount || 2
-    },
-    currentPlayerIndex: 0,
-    messages: [],
-    lastMessageId: 0
-  };
-  
-  gameRooms.set(roomId, room);
-  
-  // 发送响应
-  res.writeHead(200);
-  res.end(JSON.stringify({
-    success: true,
-    roomId: roomId,
-    playerId: playerId,
-    settings: room.settings
-  }));
+  try {
+    const roomId = generateRoomId();
+    const playerId = generatePlayerId();
+    
+    // 确保玩家数量在1-4之间
+    const playerCount = Math.max(1, Math.min(4, data.playerCount || 2));
+    
+    const room = {
+      id: roomId,
+      hostId: playerId,
+      players: [{
+        id: playerId,
+        name: data.playerName || 'Player 1',
+        color: '#e74c3c',
+        ready: false,
+        position: 0,
+        finished: false,
+        rank: null
+      }],
+      gameState: 'waiting', // waiting, playing, finished
+      settings: {
+        city: data.city || '广州',
+        playerCount: playerCount,
+        diceCount: data.diceCount || 2
+      },
+      currentPlayerIndex: 0,
+      messages: [],
+      lastMessageId: 0
+    };
+    
+    gameRooms.set(roomId, room);
+    
+    console.log('Room created successfully:', roomId);
+    
+    // 发送响应
+    res.writeHead(200, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
+    res.end(JSON.stringify({
+      success: true,
+      roomId: roomId,
+      playerId: playerId,
+      settings: room.settings
+    }));
+  } catch (error) {
+    console.error('Error creating room:', error);
+    res.writeHead(500, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
+    res.end(JSON.stringify({ 
+      success: false, 
+      error: 'Failed to create room: ' + error.message 
+    }));
+  }
 }
 
 // 加入房间
@@ -209,13 +228,19 @@ function joinRoom(req, res, data) {
   const room = gameRooms.get(data.roomId);
   
   if (!room) {
-    res.writeHead(404);
+    res.writeHead(404, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
     res.end(JSON.stringify({ error: 'Room not found' }));
     return;
   }
   
   if (room.players.length >= room.settings.playerCount) {
-    res.writeHead(400);
+    res.writeHead(400, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
     res.end(JSON.stringify({ error: 'Room is full' }));
     return;
   }
@@ -246,7 +271,10 @@ function joinRoom(req, res, data) {
   room.messages.push(joinMessage);
   
   // 发送响应
-  res.writeHead(200);
+  res.writeHead(200, {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*'
+  });
   res.end(JSON.stringify({
     success: true,
     roomId: room.id,
@@ -261,7 +289,10 @@ function leaveRoom(req, res, data) {
   const room = gameRooms.get(data.roomId);
   
   if (!room) {
-    res.writeHead(404);
+    res.writeHead(404, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
     res.end(JSON.stringify({ error: 'Room not found' }));
     return;
   }
@@ -269,7 +300,10 @@ function leaveRoom(req, res, data) {
   // 查找玩家
   const playerIndex = room.players.findIndex(p => p.id === data.playerId);
   if (playerIndex === -1) {
-    res.writeHead(404);
+    res.writeHead(404, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
     res.end(JSON.stringify({ error: 'Player not found' }));
     return;
   }
@@ -282,7 +316,10 @@ function leaveRoom(req, res, data) {
   // 如果房间为空，删除房间
   if (room.players.length === 0) {
     gameRooms.delete(room.id);
-    res.writeHead(200);
+    res.writeHead(200, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
     res.end(JSON.stringify({ success: true, message: 'Room deleted' }));
     return;
   }
@@ -304,7 +341,10 @@ function leaveRoom(req, res, data) {
   };
   room.messages.push(leaveMessage);
   
-  res.writeHead(200);
+  res.writeHead(200, {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*'
+  });
   res.end(JSON.stringify({ success: true }));
 }
 
@@ -313,12 +353,18 @@ function getRoomInfo(req, res, data) {
   const room = gameRooms.get(data.roomId);
   
   if (!room) {
-    res.writeHead(404);
+    res.writeHead(404, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
     res.end(JSON.stringify({ error: 'Room not found' }));
     return;
   }
   
-  res.writeHead(200);
+  res.writeHead(200, {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*'
+  });
   res.end(JSON.stringify({
     success: true,
     room: {
@@ -336,7 +382,10 @@ function toggleReady(req, res, data) {
   const room = gameRooms.get(data.roomId);
   
   if (!room) {
-    res.writeHead(404);
+    res.writeHead(404, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
     res.end(JSON.stringify({ error: 'Room not found' }));
     return;
   }
@@ -344,7 +393,10 @@ function toggleReady(req, res, data) {
   // 查找玩家
   const player = room.players.find(p => p.id === data.playerId);
   if (!player) {
-    res.writeHead(404);
+    res.writeHead(404, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
     res.end(JSON.stringify({ error: 'Player not found' }));
     return;
   }
@@ -365,7 +417,10 @@ function toggleReady(req, res, data) {
   };
   room.messages.push(readyMessage);
   
-  res.writeHead(200);
+  res.writeHead(200, {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*'
+  });
   res.end(JSON.stringify({ 
     success: true,
     ready: player.ready
@@ -377,14 +432,20 @@ function startGame(req, res, data) {
   const room = gameRooms.get(data.roomId);
   
   if (!room) {
-    res.writeHead(404);
+    res.writeHead(404, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
     res.end(JSON.stringify({ error: 'Room not found' }));
     return;
   }
   
   // 检查是否是房主
   if (room.hostId !== data.playerId) {
-    res.writeHead(403);
+    res.writeHead(403, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
     res.end(JSON.stringify({ error: 'Only the host can start the game' }));
     return;
   }
@@ -392,14 +453,20 @@ function startGame(req, res, data) {
   // 检查玩家是否都已准备
   const allReady = room.players.every(player => player.ready);
   if (!allReady) {
-    res.writeHead(400);
+    res.writeHead(400, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
     res.end(JSON.stringify({ error: 'Not all players are ready' }));
     return;
   }
   
   // 检查房间是否已满
   if (room.players.length < room.settings.playerCount) {
-    res.writeHead(400);
+    res.writeHead(400, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
     res.end(JSON.stringify({ error: `Need ${room.settings.playerCount} players to start the game` }));
     return;
   }
@@ -421,7 +488,10 @@ function startGame(req, res, data) {
   };
   room.messages.push(startMessage);
   
-  res.writeHead(200);
+  res.writeHead(200, {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*'
+  });
   res.end(JSON.stringify({ success: true }));
 }
 
@@ -430,7 +500,10 @@ function rollDice(req, res, data) {
   const room = gameRooms.get(data.roomId);
   
   if (!room) {
-    res.writeHead(404);
+    res.writeHead(404, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
     res.end(JSON.stringify({ error: 'Room not found' }));
     return;
   }
@@ -438,7 +511,10 @@ function rollDice(req, res, data) {
   // 检查是否轮到该玩家
   const currentPlayer = room.players[room.currentPlayerIndex];
   if (currentPlayer.id !== data.playerId) {
-    res.writeHead(400);
+    res.writeHead(400, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
     res.end(JSON.stringify({ error: 'Not your turn' }));
     return;
   }
@@ -486,7 +562,10 @@ function rollDice(req, res, data) {
   };
   room.messages.push(nextTurnMessage);
   
-  res.writeHead(200);
+  res.writeHead(200, {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*'
+  });
   res.end(JSON.stringify({ success: true }));
 }
 
@@ -495,7 +574,10 @@ function sendMessage(req, res, data) {
   const room = gameRooms.get(data.roomId);
   
   if (!room) {
-    res.writeHead(404);
+    res.writeHead(404, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
     res.end(JSON.stringify({ error: 'Room not found' }));
     return;
   }
@@ -503,7 +585,10 @@ function sendMessage(req, res, data) {
   // 查找玩家
   const player = room.players.find(p => p.id === data.playerId);
   if (!player) {
-    res.writeHead(404);
+    res.writeHead(404, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
     res.end(JSON.stringify({ error: 'Player not found' }));
     return;
   }
@@ -521,7 +606,10 @@ function sendMessage(req, res, data) {
   };
   room.messages.push(message);
   
-  res.writeHead(200);
+  res.writeHead(200, {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*'
+  });
   res.end(JSON.stringify({ success: true }));
 }
 
@@ -530,7 +618,10 @@ function pollMessages(req, res, data) {
   const room = gameRooms.get(data.roomId);
   
   if (!room) {
-    res.writeHead(404);
+    res.writeHead(404, {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
     res.end(JSON.stringify({ error: 'Room not found' }));
     return;
   }
@@ -538,7 +629,10 @@ function pollMessages(req, res, data) {
   // 获取自lastMessageId以来的新消息
   const newMessages = room.messages.filter(msg => msg.id > (data.lastMessageId || 0));
   
-  res.writeHead(200);
+  res.writeHead(200, {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*'
+  });
   res.end(JSON.stringify({ 
     success: true,
     messages: newMessages,
