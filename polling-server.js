@@ -536,14 +536,81 @@ function pollMessages(req, res, data) {
   }));
 }
 
-// 启动服务器
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`=======================================`);
-  console.log(`🚇 地铁线路飞行棋服务器启动成功!`);
-  console.log(`🚀 服务器运行在 http://localhost:${PORT}/`);
-  console.log(`🎮 在浏览器中打开以上地址开始游戏`);
-  console.log(`=======================================`);
-});
+// Vercel导出
+module.exports = (req, res) => {
+  const parsedUrl = url.parse(req.url, true);
+  const pathname = parsedUrl.pathname;
+  const query = parsedUrl.query;
+  
+  console.log(`Vercel Request: ${req.method} ${pathname}`);
+  
+  // 处理API请求
+  if (pathname.startsWith('/api/')) {
+    handleApiRequest(req, res, pathname, query);
+    return;
+  }
+  
+  // 处理静态文件
+  let filePath = '.' + pathname;
+  if (filePath === './' || filePath === './index.html') {
+    filePath = './index.html';
+  } else if (filePath === './online') {
+    filePath = './online.html';
+  }
+  
+  const extname = String(path.extname(filePath)).toLowerCase();
+  const mimeTypes = {
+    '.html': 'text/html',
+    '.js': 'text/javascript',
+    '.css': 'text/css',
+    '.json': 'application/json',
+    '.png': 'image/png',
+    '.jpg': 'image/jpg',
+    '.gif': 'image/gif',
+    '.svg': 'image/svg+xml',
+    '.wav': 'audio/wav',
+    '.mp4': 'video/mp4',
+    '.woff': 'application/font-woff',
+    '.ttf': 'application/font-ttf',
+    '.eot': 'application/vnd.ms-fontobject',
+    '.otf': 'application/font-otf',
+    '.wasm': 'application/wasm'
+  };
+  
+  const contentType = mimeTypes[extname] || 'application/octet-stream';
+  
+  fs.readFile(filePath, (error, content) => {
+    if (error) {
+      if (error.code === 'ENOENT') {
+        // 对于单页应用，如果找不到文件，返回index.html
+        fs.readFile('./index.html', (err, content) => {
+          if (err) {
+            res.writeHead(500);
+            res.end(`Server Error: ${err.code}`);
+          } else {
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.end(content, 'utf-8');
+          }
+        });
+      } else {
+        res.writeHead(500);
+        res.end(`Server Error: ${error.code}`);
+      }
+    } else {
+      res.writeHead(200, { 'Content-Type': contentType });
+      res.end(content, 'utf-8');
+    }
+  });
+};
 
-module.exports = server;
+// 仅在直接运行时启动服务器（非Vercel环境）
+if (require.main === module) {
+  const PORT = process.env.PORT || 3000;
+  server.listen(PORT, () => {
+    console.log(`=======================================`);
+    console.log(`🚇 地铁线路飞行棋服务器启动成功!`);
+    console.log(`🚀 服务器运行在 http://localhost:${PORT}/`);
+    console.log(`🎮 在浏览器中打开以上地址开始游戏`);
+    console.log(`=======================================`);
+  });
+}
