@@ -2,29 +2,21 @@
   "version": 2,
   "builds": [
     {
-      "src": "polling-server.js",
-      "use": "@vercel/node",
+      "src": "package.json",
+      "use": "@vercel/static-build",
       "config": {
-        "includeFiles": [
-          "guangzhou-metro-new.js",
-          "shenzhen-metro.js",
-          "shanghai-metro.js",
-          "metro-data-manager.js",
-          "game.js",
-          "style.css",
-          "index.html",
-          "online.html",
-          "online-game.js",
-          "polling-game.js",
-          "validate-stations.js"
-        ]
+        "distDir": "."
       }
     }
   ],
   "routes": [
     {
-      "src": "/(.*)",
+      "src": "/api/(.*)",
       "dest": "/polling-server.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
