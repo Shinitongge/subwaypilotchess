@@ -232,12 +232,40 @@ An innovative board game based on real metro/subway lines! Players can travel fr
 3. Select number of players, city, and set start/end stations for each player
 4. Click "Start Game" and enjoy!
 
-## 📝 Development
+## 🧪 Validation
 
-To run validation scripts:
+To run validation scripts to check station positions and data consistency:
 ```bash
+npm run validate
+# or
 node validate-stations.js
 ```
+
+## 📦 Project Structure
+
+```
+subwaypilotchess/
+├── index.html          # Main HTML file
+├── game.js             # Main game logic
+├── style.css           # Styling
+├── start.js            # Local development server
+├── package.json        # Project configuration
+├── README.md           # This file
+├── LICENSE             # License information
+├── .gitignore          # Git ignore rules
+├── guangzhou-metro-new.js  # Guangzhou metro data
+├── shenzhen-metro.js       # Shenzhen metro data
+├── shanghai-metro.js       # Shanghai metro data
+├── metro-data-manager.js   # Metro data management
+├── validate-stations.js    # Station data validation script
+└── .github/
+    └── workflows/
+        └── validate.yml    # GitHub Actions workflow
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## 📄 License
 

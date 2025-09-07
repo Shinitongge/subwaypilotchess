@@ -5,12 +5,13 @@
   "main": "game.js",
   "scripts": {
     "test": "node validate-stations.js",
-    "start": "open index.html",
-    "validate": "node validate-stations.js"
+    "start": "node start.js",
+    "validate": "node validate-stations.js",
+    "dev": "node start.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/your-username/subwaypilotchess.git"
+    "url": "git+https://github.com/Shinitongge/subwaypilotchess.git"
   },
   "keywords": [
     "game",
@@ -19,10 +20,10 @@
     "board-game",
     "chess"
   ],
-  "author": "Your Name",
+  "author": "Shinitongge",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/your-username/subwaypilotchess/issues"
+    "url": "https://github.com/Shinitongge/subwaypilotchess/issues"
   },
-  "homepage": "https://github.com/your-username/subwaypilotchess#readme"
+  "homepage": "https://github.com/Shinitongge/subwaypilotchess#readme"
 }
