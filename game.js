@@ -18,6 +18,8 @@ class SubwayPilotChess {
     init() {
         this.setupEventListeners();
         this.updatePlayerList();
+        // 初始化时禁用摇骰子按钮
+        document.getElementById('rollDice').disabled = true;
     }
 
     setupEventListeners() {
@@ -42,6 +44,7 @@ class SubwayPilotChess {
         const playerCount = parseInt(document.getElementById('playerCount').value);
         const playerSettingsElement = document.getElementById('playerSettings');
         
+        // 清空现有设置
         playerSettingsElement.innerHTML = '';
         
         for (let i = 0; i < playerCount; i++) {
@@ -52,36 +55,36 @@ class SubwayPilotChess {
                 border-radius: 8px;
                 padding: 15px;
                 margin-bottom: 15px;
-                background: rgba(255, 255, 255, 0.05);
+                background: rgba(255, 255, 255, 0.7);
             `;
             
+            // 确保玩家名称已定义
+            const playerName = this.playerNames[i] || `玩家${i+1}`;
+            
             playerSettingDiv.innerHTML = `
-                <h4 style="color: ${this.playerColors[i]}; margin-bottom: 10px;">${this.playerNames[i]}</h4>
-                <div class="setting-group">
-                    <label>起点站:</label>
-                    <select id="startStation${i}" class="station-select">
-                        ${this.allStations.map(station => 
-                            `<option value="${station.name}">${station.name}</option>`
-                        ).join('')}
-                    </select>
-                </div>
-                <div class="setting-group">
-                    <label>终点站:</label>
-                    <select id="endStation${i}" class="station-select">
-                        ${this.allStations.map(station => 
-                            `<option value="${station.name}">${station.name}</option>`
-                        ).join('')}
-                    </select>
+                <h4 style="margin-top: 0; color: ${this.playerColors[i]};">
+                    <span style="display: inline-block; width: 15px; height: 15px; background: ${this.playerColors[i]}; border-radius: 50%; margin-right: 10px;"></span>
+                    ${playerName}
+                </h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">起点站:</label>
+                        <select id="startStation${i}" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                            <option value="">请选择起点站</option>
+                            ${this.allStations.map(station => `<option value="${station}">${station}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">终点站:</label>
+                        <select id="endStation${i}" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                            <option value="">请选择终点站</option>
+                            ${this.allStations.map(station => `<option value="${station}">${station}</option>`).join('')}
+                        </select>
+                    </div>
                 </div>
             `;
             
             playerSettingsElement.appendChild(playerSettingDiv);
-            
-            // 设置默认值
-            if (this.allStations.length > 0) {
-                document.getElementById(`startStation${i}`).value = this.allStations[i * 10 % this.allStations.length].name;
-                document.getElementById(`endStation${i}`).value = this.allStations[(i * 10 + 20) % this.allStations.length].name;
-            }
         }
     }
 
@@ -93,11 +96,18 @@ class SubwayPilotChess {
         const playerCount = parseInt(document.getElementById('playerCount').value);
         const playerListElement = document.getElementById('playerList');
         
+        // 清空现有玩家列表
         playerListElement.innerHTML = '';
+        
+        // 重置玩家数组
         this.players = [];
-        this.finishedPlayers = [];
         
         for (let i = 0; i < playerCount; i++) {
+            // 确保玩家名称已定义
+            if (!this.playerNames[i]) {
+                this.playerNames[i] = `玩家${i+1}`;
+            }
+            
             const player = {
                 id: i,
                 name: this.playerNames[i],
@@ -129,13 +139,36 @@ class SubwayPilotChess {
     }
 
     startGame() {
+        // 确保至少有两个玩家
+        const playerCount = parseInt(document.getElementById('playerCount').value);
+        if (playerCount < 2) {
+            alert('至少需要2个玩家才能开始游戏！');
+            return;
+        }
+        
         // 验证每个玩家的起点和终点
         let allPathsValid = true;
         const playerPaths = new Map();
         
         for (let i = 0; i < this.players.length; i++) {
-            const startStation = document.getElementById(`startStation${i}`).value;
-            const endStation = document.getElementById(`endStation${i}`).value;
+            const startStationSelect = document.getElementById(`startStation${i}`);
+            const endStationSelect = document.getElementById(`endStation${i}`);
+            
+            // 检查元素是否存在
+            if (!startStationSelect || !endStationSelect) {
+                alert(`玩家${i+1}的设置不完整！`);
+                allPathsValid = false;
+                break;
+            }
+            
+            const startStation = startStationSelect.value;
+            const endStation = endStationSelect.value;
+            
+            if (!startStation || !endStation) {
+                alert(`玩家${i+1}的起点站和终点站必须都选择！`);
+                allPathsValid = false;
+                break;
+            }
             
             if (startStation === endStation) {
                 alert(`${this.playerNames[i]}的起点站和终点站不能相同！`);
@@ -739,6 +772,22 @@ document.addEventListener('DOMContentLoaded', () => {
     METRO_DATA_MANAGER.registerCity('深圳', SHENZHEN_METRO);
     METRO_DATA_MANAGER.registerCity('上海', SHANGHAI_METRO);
     
-    // 创建游戏实例
-    window.game = new SubwayPilotChess();
+    // 等待所有资源加载完成后再初始化游戏
+    document.addEventListener('DOMContentLoaded', () => {
+        // 确保METRO_DATA_MANAGER已经加载
+        if (typeof METRO_DATA_MANAGER !== 'undefined') {
+            window.subwayGame = new SubwayPilotChess();
+        } else {
+            console.error('Metro Data Manager not loaded');
+            // 延迟初始化
+            setTimeout(() => {
+                if (typeof METRO_DATA_MANAGER !== 'undefined') {
+                    window.subwayGame = new SubwayPilotChess();
+                } else {
+                    console.error('Failed to load Metro Data Manager');
+                    alert('游戏数据加载失败，请刷新页面重试');
+                }
+            }, 1000);
+        }
+    });
 });
