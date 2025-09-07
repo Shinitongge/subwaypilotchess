@@ -454,82 +454,26 @@ body {
     font-size: 12px;
 }
 
-@media (max-width: 1200px) {
-    .game-content {
-        flex-direction: column;
-    }
-    
-    .left-panel {
-        flex: 0 0 auto;
-        width: 100%;
-    }
-    
-    .game-board {
-        max-height: 600px;
-    }
-    
-    .metro-map-container {
-        width: 100%;
-        max-width: 800px;
-        height: 600px;
-        transform: scale(0.8);
-        transform-origin: top center;
-    }
-    
-    .metro-station {
-        width: 30px !important;
-        height: 30px !important;
-        font-size: 6px !important;
-    }
-    
-    .piece {
-        width: 8px !important;
-        height: 8px !important;
-    }
-    
-    .metro-legend {
-        right: 5px !important;
-        top: 5px !important;
-        padding: 10px !important;
-        max-width: 150px !important;
-        font-size: 10px !important;
-    }
+/* 在线游戏按钮 */
+.online-btn {
+    width: 100%;
+    padding: 12px;
+    background: #9b59b6;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
 }
 
+.online-btn:hover {
+    background: #8e44ad;
+}
+
+/* 响应式调整 */
 @media (max-width: 768px) {
-    .game-container {
-        padding: 15px;
-    }
-    
-    .game-header h1 {
-        font-size: 2em;
-    }
-    
-    .metro-map-container {
-        width: 100%;
-        max-width: 600px;
-        height: 550px;
-        transform: scale(0.6);
-        transform-origin: top center;
-    }
-    
-    .metro-station {
-        width: 25px !important;
-        height: 25px !important;
-        font-size: 5px !important;
-    }
-    
-    .piece {
-        width: 6px !important;
-        height: 6px !important;
-    }
-    
-    .metro-legend {
-        display: none;
-    }
-}
-
-@media (max-width: 480px) {
     .game-container {
         padding: 10px;
     }
