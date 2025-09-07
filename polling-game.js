@@ -42,7 +42,7 @@ class PollingSubwayPilotChess {
     init() {
         this.setupEventListeners();
         this.showMenu();
-        this.updateConnectionStatus('connected'); // 基于HTTP轮询，始终显示已连接
+        this.updateConnectionStatus('connected'); // 基于HTTP轮询，始终认为已连接
     }
 
     // 更新连接状态显示
@@ -243,21 +243,30 @@ class PollingSubwayPilotChess {
         if (!this.roomId || !this.playerId) return;
         
         try {
-            const result = await this.apiRequest('/toggleReady', {
+            const response = await this.apiRequest('/toggleReady', {
                 roomId: this.roomId,
                 playerId: this.playerId
             });
             
+            // 使用更语义化的类名和按钮文本
             const readyBtn = document.getElementById('readyBtn');
-            if (result.ready) {
+            if (response.ready) {
                 readyBtn.textContent = '取消准备';
-                readyBtn.className = 'btn btn-secondary';
+                readyBtn.classList.remove('btn-primary');
+                readyBtn.classList.add('btn-secondary');
             } else {
                 readyBtn.textContent = '准备';
-                readyBtn.className = 'btn btn-primary';
+                readyBtn.classList.remove('btn-secondary');
+                readyBtn.classList.add('btn-primary');
             }
+            
+            // 添加准备状态切换成功的提示信息
+            this.showNotification(response.message || '准备状态已更新');
+            
+            return response;
         } catch (error) {
             this.showError('切换准备状态失败: ' + error.message);
+            throw error;
         }
     }
     
@@ -328,8 +337,13 @@ class PollingSubwayPilotChess {
                         
                         this.lastMessageId = result.lastMessageId;
                     }
+                    
+                    // 更新连接状态为已连接
+                    this.updateConnectionStatus('connected');
                 } catch (error) {
                     console.error('轮询消息失败:', error);
+                    // 如果轮询失败，更新连接状态为未连接
+                    this.updateConnectionStatus('disconnected');
                 }
             }
         }, 1000); // 每秒轮询一次
@@ -341,6 +355,9 @@ class PollingSubwayPilotChess {
             clearInterval(this.pollingInterval);
             this.pollingInterval = null;
         }
+        
+        // 停止轮询时更新连接状态为未连接
+        this.updateConnectionStatus('disconnected');
     }
     
     // 处理服务器消息

@@ -4,6 +4,10 @@
     box-sizing: border-box;
 }
 
+html, body {
+    height: 100%;
+}
+
 body {
     font-family: 'Arial', sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -15,6 +19,7 @@ body {
     max-width: 1800px;
     margin: 0 auto;
     padding: 20px;
+    min-height: 100vh;
 }
 
 .game-header {
@@ -30,7 +35,7 @@ body {
 .game-header h1 {
     text-align: center;
     color: #333;
-    margin-bottom: 15px;
+    margin: 0;
     font-size: 2.5em;
 }
 
@@ -38,14 +43,14 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-top: 15px;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 10px;
 }
 
 .current-player {
     font-weight: bold;
     color: #3498db;
-    font-size: 1.2em;
 }
 
 .dice-controls {
@@ -71,7 +76,7 @@ body {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 1em;
+    font-size: 14px;
     transition: background-color 0.3s;
 }
 
@@ -107,10 +112,10 @@ body {
 }
 
 .player-list h3, .ranking h3, .game-settings h3 {
+    margin-top: 0;
     margin-bottom: 15px;
     color: #333;
-    border-bottom: 2px solid #3498db;
-    padding-bottom: 5px;
+    text-align: center;
 }
 
 .player-item {
@@ -118,7 +123,7 @@ body {
     align-items: center;
     padding: 10px;
     margin-bottom: 10px;
-    background: #f8f9fa;
+    background: rgba(236, 240, 241, 0.5);
     border-radius: 8px;
     border-left: 4px solid #3498db;
 }
@@ -130,39 +135,29 @@ body {
     margin-right: 10px;
 }
 
-.player-info {
-    flex: 1;
-}
-
 .player-name {
+    flex: 1;
     font-weight: bold;
 }
 
 .player-status {
-    font-size: 0.9em;
+    font-size: 12px;
     color: #27ae60;
 }
 
 .ranking-item {
     display: flex;
-    justify-content: space-between;
+    align-items: center;
     padding: 8px;
     margin-bottom: 5px;
-    background: #f8f9fa;
-    border-radius: 5px;
+    background: rgba(236, 240, 241, 0.5);
+    border-radius: 8px;
 }
 
-.ranking-item:nth-child(1) {
-    background: #fff9c4;
+.ranking-item .rank {
     font-weight: bold;
-}
-
-.ranking-item:nth-child(2) {
-    background: #e3f2fd;
-}
-
-.ranking-item:nth-child(3) {
-    background: #ffe0b2;
+    margin-right: 10px;
+    color: #e74c3c;
 }
 
 .setting-group {
@@ -187,8 +182,8 @@ body {
     padding: 12px;
     border: none;
     border-radius: 5px;
-    font-size: 16px;
     cursor: pointer;
+    font-size: 16px;
     margin-top: 10px;
     transition: background-color 0.3s;
 }
@@ -211,24 +206,6 @@ body {
     background: #c0392b;
 }
 
-/* 在线游戏按钮 */
-.online-btn {
-    width: 100%;
-    padding: 12px;
-    background: #9b59b6;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: background-color 0.3s;
-}
-
-.online-btn:hover {
-    background: #8e44ad;
-}
-
 .game-board-container {
     flex: 1;
     background: rgba(255, 255, 255, 0.95);
@@ -237,76 +214,107 @@ body {
     box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
     backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.18);
-    overflow: auto;
-    position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
 .dice-display {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 10px;
     margin-bottom: 20px;
 }
 
 .dice {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     background: white;
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 28px;
+    font-size: 24px;
     font-weight: bold;
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
 
 .metro-map-container {
-    width: 100%;
-    height: 100%;
-    min-height: 600px;
-    position: relative;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     overflow: auto;
+}
+
+.metro-map {
+    position: relative;
+    transform-origin: center center;
 }
 
 .metro-station {
     position: absolute;
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    border: 2px solid #333;
-    background: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 8px;
+    font-size: 10px;
     font-weight: bold;
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
-    z-index: 10;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    border: 2px solid #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    z-index: 2;
 }
 
 .metro-station:hover {
     transform: scale(1.2);
-    z-index: 20;
+    z-index: 10;
 }
 
-.metro-line {
+.piece {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    z-index: 3;
+}
+
+.line-connection {
     position: absolute;
     height: 4px;
     transform-origin: 0 0;
     z-index: 1;
 }
 
-.piece {
+.metro-legend {
     position: absolute;
-    width: 12px;
-    height: 12px;
+    right: 10px;
+    top: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    z-index: 100;
+    max-height: calc(100% - 20px);
+    overflow-y: auto;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
-    z-index: 15;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    margin-right: 8px;
+    border: 1px solid #fff;
 }
 
 .modal {
@@ -328,36 +336,18 @@ body {
     width: 80%;
     max-width: 500px;
     text-align: center;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
 }
 
-.metro-legend {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-    z-index: 100;
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 8px;
-}
-
-.legend-color {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    margin-right: 10px;
-    border: 1px solid #333;
-}
-
-.legend-name {
-    font-size: 14px;
+.modal-content button {
+    padding: 10px 20px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
 }
 
 /* 路径高亮样式 */
@@ -412,6 +402,14 @@ body {
     padding: 5px;
 }
 
+.piece {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    position: absolute;
+    transition: all 0.5s ease;
+}
+
 /* 响应式调整 */
 @media (max-width: 768px) {
     .game-container {
@@ -420,6 +418,15 @@ body {
     
     .game-header h1 {
         font-size: 1.5em;
+    }
+    
+    .game-content {
+        flex-direction: column;
+        height: auto;
+    }
+    
+    .left-panel {
+        flex: 0 0 auto;
     }
     
     .metro-map-container {

@@ -8,11 +8,13 @@
     <style>
         /* 在线游戏特有样式 */
         body {
-            margin: 0;
-            padding: 0;
+            font-family: 'Arial', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            font-family: 'Arial', sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
         .page {
@@ -386,10 +388,7 @@
     <script>
         // 页面加载完成后初始化在线游戏
         document.addEventListener('DOMContentLoaded', () => {
-            // 只在有在线游戏元素时初始化
-            if (document.getElementById('menuPage')) {
-                window.pollingGame = new PollingSubwayPilotChess();
-            }
+            window.pollingGame = new PollingSubwayPilotChess();
         });
     </script>
 </body>
