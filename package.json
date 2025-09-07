@@ -1,0 +1,28 @@
+{
+  "name": "subway-pilot-chess",
+  "version": "1.0.0",
+  "description": "An innovative board game based on real metro/subway lines",
+  "main": "game.js",
+  "scripts": {
+    "test": "node validate-stations.js",
+    "start": "open index.html",
+    "validate": "node validate-stations.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-username/subwaypilotchess.git"
+  },
+  "keywords": [
+    "game",
+    "subway",
+    "metro",
+    "board-game",
+    "chess"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/your-username/subwaypilotchess/issues"
+  },
+  "homepage": "https://github.com/your-username/subwaypilotchess#readme"
+}

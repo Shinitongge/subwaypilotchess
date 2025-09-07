@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>城市地铁飞行棋</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1>🚇 城市地铁飞行棋</h1>
+            <div class="game-info">
+                <div class="current-player">
+                    当前玩家: <span id="currentPlayerName">玩家1</span>
+                </div>
+                <div class="dice-controls">
+                    <label>骰子数量:</label>
+                    <select id="diceCount">
+                        <option value="1">1颗</option>
+                        <option value="2" selected>2颗</option>
+                        <option value="3">3颗</option>
+                    </select>
+                    <button id="rollDice" class="roll-btn">🎲 摇骰子</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="game-content">
+            <div class="left-panel">
+                <div class="player-list">
+                    <h3>玩家列表</h3>
+                    <div id="playerList"></div>
+                </div>
+                
+                <div class="ranking">
+                    <h3>🏆 实时排名</h3>
+                    <div id="rankingList"></div>
+                </div>
+
+                <div class="game-settings">
+                    <h3>游戏设置</h3>
+                    <div class="setting-group">
+                        <label>选择城市:</label>
+                        <select id="citySelect">
+                            <option value="广州">广州</option>
+                            <option value="深圳">深圳</option>
+                            <option value="上海">上海</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>玩家数量:</label>
+                        <select id="playerCount">
+                            <option value="2">2人</option>
+                            <option value="3">3人</option>
+                            <option value="4">4人</option>
+                        </select>
+                    </div>
+                    <div id="playerSettings"></div>
+                    <button id="startGame" class="start-btn">开始游戏</button>
+                    <button id="resetGame" class="reset-btn">重新开始</button>
+                </div>
+            </div>
+
+            <div class="game-board-container">
+                <div class="dice-display" id="diceDisplay"></div>
+                <div class="game-board" id="gameBoard"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameOverModal" class="modal">
+        <div class="modal-content">
+            <h2>🎉 游戏结束！</h2>
+            <div id="finalRanking"></div>
+            <button onclick="closeModal()">再来一局</button>
+        </div>
+    </div>
+
+    <script src="guangzhou-metro-new.js"></script>
+    <script src="shenzhen-metro.js"></script>
+    <script src="shanghai-metro.js"></script>
+    <script src="metro-data-manager.js"></script>
+    <script src="validate-stations.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
