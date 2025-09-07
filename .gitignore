@@ -19,3 +19,4 @@ validation-results.txt
 
 # Environment files
 .env
+.vercel

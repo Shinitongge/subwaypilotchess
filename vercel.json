@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "server.js",
+      "src": "polling-server.js",
       "use": "@vercel/node",
       "config": {
         "includeFiles": [
@@ -15,6 +15,7 @@
           "index.html",
           "online.html",
           "online-game.js",
+          "polling-game.js",
           "validate-stations.js"
         ]
       }
@@ -23,7 +24,7 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/server.js"
+      "dest": "/polling-server.js"
     }
   ]
 }

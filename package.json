@@ -2,11 +2,11 @@
   "name": "subway-pilot-chess",
   "version": "1.0.0",
   "description": "An innovative board game based on real metro/subway lines",
-  "main": "server.js",
+  "main": "polling-server.js",
   "scripts": {
     "test": "node validate-stations.js",
-    "start": "node server.js",
-    "dev": "node server.js",
+    "start": "node polling-server.js",
+    "dev": "node polling-server.js",
     "validate": "node validate-stations.js"
   },
   "repository": {
