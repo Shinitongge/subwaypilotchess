@@ -166,6 +166,9 @@ function createRoom(req, res, data) {
   const roomId = generateRoomId();
   const playerId = generatePlayerId();
   
+  // 确保玩家数量在1-4之间
+  const playerCount = Math.max(1, Math.min(4, data.playerCount || 2));
+  
   const room = {
     id: roomId,
     hostId: playerId,
@@ -181,7 +184,7 @@ function createRoom(req, res, data) {
     gameState: 'waiting', // waiting, playing, finished
     settings: {
       city: data.city || '广州',
-      playerCount: data.playerCount || 2,
+      playerCount: playerCount,
       diceCount: data.diceCount || 2
     },
     currentPlayerIndex: 0,
@@ -224,7 +227,7 @@ function joinRoom(req, res, data) {
   const player = {
     id: playerId,
     name: data.playerName || `Player ${room.players.length + 1}`,
-    color: playerColors[room.players.length],
+    color: playerColors[room.players.length % 4], // 确保颜色在范围内
     ready: false,
     position: 0,
     finished: false,
@@ -391,6 +394,13 @@ function startGame(req, res, data) {
   if (!allReady) {
     res.writeHead(400);
     res.end(JSON.stringify({ error: 'Not all players are ready' }));
+    return;
+  }
+  
+  // 检查房间是否已满
+  if (room.players.length < room.settings.playerCount) {
+    res.writeHead(400);
+    res.end(JSON.stringify({ error: `Need ${room.settings.playerCount} players to start the game` }));
     return;
   }
   

@@ -1,3 +1,31 @@
+    // 显示通知
+    showNotification(message) {
+        // 创建通知元素
+        const notificationElement = document.createElement('div');
+        notificationElement.className = 'notification';
+        notificationElement.innerHTML = `
+            <div style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); 
+                        background: #3498db; color: white; padding: 15px; border-radius: 5px; 
+                        z-index: 10000; box-shadow: 0 4px 8px rgba(0,0,0,0.2); max-width: 90%;">
+                <div style="display: flex; align-items: center;">
+                    <span style="font-size: 18px; margin-right: 10px;">ℹ️</span>
+                    <span>${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" 
+                            style="margin-left: 15px; background: rgba(255,255,255,0.2); border: none; 
+                                   color: white; border-radius: 3px; cursor: pointer; padding: 3px 8px;">×</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(notificationElement);
+        
+        // 3秒后自动移除通知
+        setTimeout(() => {
+            if (notificationElement.parentElement) {
+                notificationElement.parentElement.removeChild(notificationElement);
+            }
+        }, 3000);
+    }
 // 基于HTTP轮询的在线游戏客户端逻辑
 class PollingSubwayPilotChess {
     constructor() {
@@ -79,7 +107,7 @@ class PollingSubwayPilotChess {
     async createRoom() {
         const playerName = document.getElementById('playerNameInput').value || 'Player';
         const city = document.getElementById('citySelect').value || '广州';
-        const playerCount = parseInt(document.getElementById('playerCountSelect').value) || 2;
+        const playerCount = Math.max(1, Math.min(4, parseInt(document.getElementById('playerCountSelect').value) || 2)); // 限制在1-4之间
         const diceCount = parseInt(document.getElementById('diceCountSelect').value) || 2;
         
         try {
@@ -200,21 +228,30 @@ class PollingSubwayPilotChess {
         if (!this.roomId || !this.playerId) return;
         
         try {
-            const result = await this.apiRequest('/toggleReady', {
+            const response = await this.apiRequest('/toggleReady', {
                 roomId: this.roomId,
                 playerId: this.playerId
             });
             
+            // 使用更语义化的类名和按钮文本
             const readyBtn = document.getElementById('readyBtn');
-            if (result.ready) {
+            if (response.ready) {
                 readyBtn.textContent = '取消准备';
-                readyBtn.className = 'btn btn-secondary';
+                readyBtn.classList.remove('btn-primary');
+                readyBtn.classList.add('btn-secondary');
             } else {
                 readyBtn.textContent = '准备';
-                readyBtn.className = 'btn btn-primary';
+                readyBtn.classList.remove('btn-secondary');
+                readyBtn.classList.add('btn-primary');
             }
+            
+            // 添加准备状态切换成功的提示信息
+            this.showNotification(response.message || '准备状态已更新');
+            
+            return response;
         } catch (error) {
             this.showError('切换准备状态失败: ' + error.message);
+            throw error;
         }
     }
     
@@ -332,30 +369,75 @@ class PollingSubwayPilotChess {
     // 处理玩家加入
     handlePlayerJoined(data) {
         console.log('Player joined:', data.player);
+        
+        // 验证数据
+        if (!data || !data.player) {
+            console.error('Invalid player join data');
+            return;
+        }
+        
         // 更新玩家列表
         if (this.roomData && this.roomData.players) {
-            this.roomData.players.push(data.player);
-            this.updatePlayerList(this.roomData.players);
+            // 检查玩家是否已存在
+            const existingPlayer = this.roomData.players.find(p => p.id === data.player.id);
+            if (!existingPlayer) {
+                this.roomData.players.push(data.player);
+                this.updatePlayerList(this.roomData.players);
+                console.log(`Player ${data.player.name} added to the room`);
+            } else {
+                console.warn(`Player ${data.player.name} is already in the room`);
+            }
+        } else {
+            console.warn('Cannot add player to undefined room players list');
         }
     }
     
     // 处理玩家离开
     handlePlayerLeft(data) {
         console.log('Player left:', data.playerName);
+        
+        // 验证数据完整性
+        if (!data || !data.playerId) {
+            console.error('Invalid player left data');
+            return;
+        }
+        
         // 更新玩家列表
         if (this.roomData && this.roomData.players) {
-            this.roomData.players = this.roomData.players.filter(p => p.id !== data.playerId);
+            // 使用filter创建新数组
+            this.roomData.players = this.roomData.players.filter(player => player.id !== data.playerId);
+            
+            // 更新界面
             this.updatePlayerList(this.roomData.players);
+            
+            // 显示离开提示
+            this.showNotification(`${data.playerName} 离开了房间`);
+        } else {
+            console.warn('Cannot remove player from undefined room players list');
         }
     }
     
     // 处理玩家准备状态变化
     handlePlayerReady(data) {
         console.log('Player ready status changed:', data);
+        
+        // 验证数据完整性
+        if (!data || !data.playerId) {
+            console.error('Invalid player ready data');
+            return;
+        }
+        
         // 更新玩家列表
         if (this.roomData && this.roomData.players) {
             const player = this.roomData.players.find(p => p.id === data.playerId);
             if (player) {
+                // 添加状态变更提示
+                if (data.ready) {
+                    this.showNotification(`${player.name} 已准备`);
+                } else {
+                    this.showNotification(`${player.name} 取消了准备`);
+                }
+                
                 player.ready = data.ready;
                 this.updatePlayerList(this.roomData.players);
             }
